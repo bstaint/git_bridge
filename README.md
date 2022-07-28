@@ -1,4 +1,4 @@
-#### MSYS2 git bridge
+## VSCode Git Bridge
 
 解决在VSCode中无法使用MSYS2 git问题
 
