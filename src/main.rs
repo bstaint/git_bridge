@@ -7,8 +7,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
     let output = Command::new("git")
         .args(&args)
         .output()?;
-
     let stdout = output.stdout;
+    let status_code = output.status.code().unwrap_or(0);
+
     if let "rev-parse" = args.first().map(String::as_str).unwrap_or("") {
         let stdout = std::str::from_utf8(&stdout)?.trim();
         for line in stdout.split("\n") {
@@ -22,6 +23,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
     } else {
         io::stdout().write_all(&stdout)?;
     }
-    io::stderr().write_all(&output.stderr)?;
-    Ok(())
+    std::process::exit(status_code);
 }
