@@ -1,12 +1,20 @@
 use std::env;
+use std::fs;
 use std::io::{self, Write};
 use std::process::Command;
 
 fn main() -> Result<(), Box<dyn std::error::Error>>{
     let args: Vec<_> = env::args().skip(1).collect();
+    // If the current directory's path can be converted to a real path. 
+    if let Ok(pathbuf) = env::current_dir() {
+        let path = pathbuf.as_path();
+        env::set_current_dir(fs::canonicalize(path)?)?;
+    }
+
     let output = Command::new("git")
         .args(&args)
         .output()?;
+
     let stdout = output.stdout;
     let status_code = output.status.code().unwrap_or(0);
 
@@ -22,6 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
         io::stdout().flush()?;
     } else {
         io::stdout().write_all(&stdout)?;
+        // io::stdout().write_all(&output.stderr)?;
     }
     std::process::exit(status_code);
 }
