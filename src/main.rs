@@ -21,11 +21,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
     if let "rev-parse" = args.first().map(String::as_str).unwrap_or("") {
         let stdout = std::str::from_utf8(&stdout)?.trim();
         for line in stdout.split("\n") {
-            let cygpath_output = Command::new("cygpath")
-                .arg("-w")
-                .arg(line).output()?;
-            let stdout = std::str::from_utf8(&cygpath_output.stdout)?;
-            println!("{}", stdout.trim());
+            if fs::metadata(line).is_ok() {
+                let cygpath_output = Command::new("cygpath")
+                    .arg("-w")
+                    .arg(line).output()?;
+                let stdout = std::str::from_utf8(&cygpath_output.stdout)?;
+                println!("{}", stdout.trim());
+            } else {
+                println!("{}", line);
+            }
         }
         io::stdout().flush()?;
     } else {
