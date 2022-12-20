@@ -1,5 +1,6 @@
 use std::env;
 use std::fs;
+use std::path::Path;
 use std::io::{self, Write};
 use std::process::Command;
 
@@ -21,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
     if let "rev-parse" = args.first().map(String::as_str).unwrap_or("") {
         let stdout = std::str::from_utf8(&stdout)?.trim();
         for line in stdout.split("\n") {
-            if fs::metadata(line).is_ok() {
+            if Path::new(line).has_root() {
                 let cygpath_output = Command::new("cygpath")
                     .arg("-w")
                     .arg(line).output()?;
